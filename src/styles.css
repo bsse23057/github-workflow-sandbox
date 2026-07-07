@@ -980,3 +980,268 @@ a { color: var(--ifm-link-color); }
   pointer-events: none; transition: opacity 0.22s ease, transform 0.22s ease;
 }
 .gh-toast-panel--open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+/* ═══════════════════════════════════════════════
+   Ping-to-merge confirmation modal
+   ═══════════════════════════════════════════════ */
+
+.gh-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  animation: gh-modal-fade-in 0.15s ease;
+}
+
+@keyframes gh-modal-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.gh-modal {
+  width: 420px;
+  max-width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 0.85rem;
+  border: 1px solid var(--ifm-color-primary);
+  background: var(--ifm-background-surface-color);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  padding: 1.25rem 1.35rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  animation: gh-modal-pop 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes gh-modal-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.gh-modal-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ifm-color-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.gh-modal-title::before {
+  content: "📨";
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.gh-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.55rem;
+  background: var(--ifm-color-emphasis-100);
+}
+
+.gh-modal-pr-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ifm-font-color-base);
+  line-height: 1.4;
+}
+
+.gh-modal-pr-meta {
+  margin: 0;
+  font-size: 0.74rem;
+  font-family: var(--ifm-font-family-monospace);
+  color: var(--ifm-font-color-base);
+  opacity: 0.6;
+}
+
+.gh-modal-description {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--ifm-font-color-base);
+  opacity: 0.7;
+  border-top: 1px dashed var(--ifm-color-emphasis-300);
+  padding-top: 0.45rem;
+}
+
+/* Actions row */
+.gh-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding-top: 0.7rem;
+  margin-top: 0.1rem;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.gh-modal-cancel,
+.gh-modal-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.5rem 1.15rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.14s ease, border-color 0.14s ease,
+              transform 0.12s ease, opacity 0.12s ease, box-shadow 0.14s ease;
+}
+
+.gh-modal-cancel:active,
+.gh-modal-confirm:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.gh-modal-cancel {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+}
+.gh-modal-cancel:hover {
+  border-color: var(--ifm-color-emphasis-500);
+  background: var(--ifm-color-emphasis-100);
+}
+
+.gh-modal-confirm {
+  border: 1px solid var(--ifm-color-primary);
+  background: var(--ifm-color-primary);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+.gh-modal-confirm:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+}
+
+
+
+/* ═══════════════════════════════════════════════
+   PR pings section
+   ═══════════════════════════════════════════════ */
+
+.gh-pr-pings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.gh-comments-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0.15rem 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ifm-color-emphasis-700);
+  opacity: 0.7;
+  cursor: pointer;
+  transition: opacity 0.12s ease, color 0.12s ease;
+  font-family: inherit;
+}
+.gh-comments-toggle:hover {
+  opacity: 1;
+  color: var(--ifm-color-primary);
+}
+
+.gh-pings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.gh-pings-loading,
+.gh-pings-empty {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px dashed var(--ifm-color-emphasis-300);
+  font-size: 0.82rem;
+  opacity: 0.55;
+  text-align: center;
+}
+
+.gh-ping-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.5rem;
+  background: var(--ifm-color-emphasis-100);
+  border: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.gh-ping-item-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.gh-ping-item-author {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ifm-color-primary);
+  white-space: nowrap;
+}
+
+.gh-ping-item-author::before {
+  content: "📨 ";
+}
+
+.gh-ping-item-time {
+  font-size: 0.72rem;
+  font-family: var(--ifm-font-family-monospace);
+  color: var(--ifm-font-color-base);
+  opacity: 0.55;
+  white-space: nowrap;
+}
+
+.gh-ping-delete-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
+}
+.gh-ping-delete-btn:hover:not(:disabled) {
+  border-color: var(--ifm-color-danger);
+  background: rgba(220, 53, 69, 0.1);
+  color: var(--ifm-color-danger);
+}
+.gh-ping-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
